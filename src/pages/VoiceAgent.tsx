@@ -13,7 +13,11 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+// Ensure the API URL has https:// protocol
+const rawApiUrl = import.meta.env.VITE_API_BASE_URL || "";
+const API_BASE_URL = rawApiUrl && !rawApiUrl.startsWith("http") 
+  ? `https://${rawApiUrl}` 
+  : rawApiUrl;
 
 interface UserData {
   id: number;
