@@ -4,6 +4,12 @@ import { Room, RoomEvent, Track, DataPacket_Kind } from "livekit-client";
 import { Loader2, VideoOff, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+// Ensure the API URL has https:// protocol
+const rawApiUrl = import.meta.env.VITE_API_BASE_URL || "";
+const API_BASE_URL = rawApiUrl && !rawApiUrl.startsWith("http") 
+  ? `https://${rawApiUrl}` 
+  : rawApiUrl;
+
 interface BeyAvatarProps {
   isActive: boolean;
   isCameraOn?: boolean;
@@ -83,7 +89,7 @@ export const BeyAvatar = forwardRef<BeyAvatarHandle, BeyAvatarProps>(({
     setError(null);
     
     try {
-      const response = await fetch("/api/bey/call", {
+      const response = await fetch(`${API_BASE_URL}/api/bey/call`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phoneNumber: overridePhoneNumber || phoneNumber }),
@@ -245,7 +251,7 @@ export const BeyAvatar = forwardRef<BeyAvatarHandle, BeyAvatarProps>(({
     
     if (currentCallId) {
       try {
-        await fetch(`/api/bey/call/${currentCallId}/end`, {
+        await fetch(`${API_BASE_URL}/api/bey/call/${currentCallId}/end`, {
           method: "POST",
         });
       } catch (err) {
@@ -320,7 +326,7 @@ export const BeyAvatar = forwardRef<BeyAvatarHandle, BeyAvatarProps>(({
       }
       const cId = callIdRef.current;
       if (cId) {
-        fetch(`/api/bey/call/${cId}/end`, { method: "POST" }).catch(() => {});
+        fetch(`${API_BASE_URL}/api/bey/call/${cId}/end`, { method: "POST" }).catch(() => {});
       }
     };
   }, []);
