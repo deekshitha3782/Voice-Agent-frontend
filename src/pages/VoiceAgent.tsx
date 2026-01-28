@@ -637,7 +637,7 @@ export default function VoiceAgent() {
         .map(m => `${m.role === "assistant" ? "AI" : "User"}: ${m.content}`)
         .join("\n");
       
-      const response = await fetch(`/api/sessions/${sessionId}/end`, {
+      const response = await fetch(`${API_BASE_URL}/api/sessions/${sessionId}/end`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ transcript }),
