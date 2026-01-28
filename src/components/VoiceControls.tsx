@@ -1,15 +1,13 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Mic, MicOff, PhoneOff, Video, VideoOff, Volume2, VolumeX } from "lucide-react";
+import { Mic, MicOff, PhoneOff, Volume2, VolumeX } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface VoiceControlsProps {
   isListening: boolean;
-  isCameraOn: boolean;
   isMuted: boolean;
   isCallActive: boolean;
   onToggleMic: () => void;
-  onToggleCamera: () => void;
   onToggleMute: () => void;
   onEndCall: () => void;
   disabled?: boolean;
@@ -18,11 +16,9 @@ interface VoiceControlsProps {
 
 export function VoiceControls({
   isListening,
-  isCameraOn,
   isMuted,
   isCallActive,
   onToggleMic,
-  onToggleCamera,
   onToggleMute,
   onEndCall,
   disabled,
@@ -30,32 +26,6 @@ export function VoiceControls({
 }: VoiceControlsProps) {
   return (
     <div className={cn("flex items-center justify-center gap-3", className)}>
-      {/* Camera Toggle */}
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant={isCameraOn ? "secondary" : "outline"}
-            size="icon"
-            onClick={onToggleCamera}
-            disabled={disabled || !isCallActive}
-            className={cn(
-              "w-14 h-14 rounded-full transition-all",
-              !isCameraOn && "bg-destructive/10 border-destructive/50 text-destructive hover:bg-destructive/20"
-            )}
-            data-testid="button-toggle-camera"
-          >
-            {isCameraOn ? (
-              <Video className="w-6 h-6" />
-            ) : (
-              <VideoOff className="w-6 h-6" />
-            )}
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          {isCameraOn ? "Turn off camera" : "Turn on camera"}
-        </TooltipContent>
-      </Tooltip>
-
       {/* Main Microphone Button */}
       <Tooltip>
         <TooltipTrigger asChild>

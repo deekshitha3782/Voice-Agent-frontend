@@ -42,6 +42,7 @@ export interface CallSummaryData {
   appointments: AppointmentSummary[];
   userPreferences?: string[];
   timestamp: Date;
+  llmProvider?: "openai" | "groq";
   costBreakdown?: CostBreakdown;
 }
 
@@ -53,12 +54,13 @@ interface CallSummaryProps {
 }
 
 export function CallSummary({ data, onClose, onNewCall, className }: CallSummaryProps) {
+  const llmLabel = data.llmProvider === "groq" ? "Groq Summary" : "OpenAI Summary";
   const handleDownload = () => {
     const costSection = data.costBreakdown ? `
 Cost Breakdown
 --------------
 Beyond Presence (${data.costBreakdown.beyondPresenceMinutes.toFixed(2)} min): $${data.costBreakdown.beyondPresenceCost.toFixed(4)}
-OpenAI Summary: $${data.costBreakdown.openAiSummaryCost.toFixed(4)}
+${llmLabel}: $${data.costBreakdown.openAiSummaryCost.toFixed(4)}
 Total Cost: $${data.costBreakdown.totalCost.toFixed(4)}
 ` : "";
 
@@ -235,7 +237,7 @@ ${costSection}
                       <span className="font-medium">${data.costBreakdown.beyondPresenceCost.toFixed(4)}</span>
                     </div>
                     <div className="flex justify-between items-center p-2 rounded bg-muted/50">
-                      <span className="text-muted-foreground">OpenAI Summary</span>
+                      <span className="text-muted-foreground">{llmLabel}</span>
                       <span className="font-medium">${data.costBreakdown.openAiSummaryCost.toFixed(4)}</span>
                     </div>
                     <Separator />
@@ -245,7 +247,7 @@ ${costSection}
                     </div>
                   </div>
                   <p className="text-xs text-muted-foreground mt-2">
-                    * Based on Beyond Presence: $0.50/min, OpenAI GPT-4o-mini: ~$0.001/call
+                    * Based on Beyond Presence: $0.50/min, {data.llmProvider === "groq" ? "Groq summary: $0/call" : "OpenAI GPT-4o-mini: ~$0.001/call"}
                   </p>
                 </div>
               </>

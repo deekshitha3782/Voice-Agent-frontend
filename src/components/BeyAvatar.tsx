@@ -394,31 +394,6 @@ export const BeyAvatar = forwardRef<BeyAvatarHandle, BeyAvatarProps>(({
       {/* Hidden audio element for avatar voice */}
       <audio ref={audioRef} autoPlay />
       
-      {/* Local user video - picture-in-picture style */}
-      <div className={cn(
-        "absolute bottom-4 right-4 w-32 h-24 rounded-lg overflow-hidden border-2 border-white/30 shadow-lg transition-opacity duration-300",
-        hasLocalVideo && isCameraOn ? "opacity-100" : "opacity-0"
-      )}>
-        <video
-          ref={localVideoRef}
-          autoPlay
-          playsInline
-          muted
-          className="w-full h-full object-cover transform scale-x-[-1]"
-          data-testid="video-local"
-        />
-      </div>
-      
-      {/* Camera off indicator in PiP area */}
-      {!isCameraOn && isConnected && (
-        <div className="absolute bottom-4 right-4 w-32 h-24 rounded-lg overflow-hidden border-2 border-white/20 bg-gray-800/80 flex items-center justify-center">
-          <div className="flex flex-col items-center gap-1">
-            <VideoOff className="w-6 h-6 text-gray-400" />
-            <span className="text-xs text-gray-400">Camera off</span>
-          </div>
-        </div>
-      )}
-      
       {/* Connection status indicator */}
       {isConnected && (
         <div className="absolute top-4 left-4">

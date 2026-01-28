@@ -50,7 +50,6 @@ export default function VoiceAgent() {
   const [callStartTime, setCallStartTime] = useState<Date | null>(null);
   const [useBey, setUseBey] = useState(true);
   const [beyCallId, setBeyCallId] = useState<string | null>(null);
-  const [isCameraOn, setIsCameraOn] = useState(true);
   const [beyQuotaExceeded, setBeyQuotaExceeded] = useState(false);
   const useBeyRef = useRef(true);
   
@@ -657,7 +656,8 @@ export default function VoiceAgent() {
       // Calculate cost breakdown
       const beyondPresenceMinutes = duration / 60;
       const beyondPresenceCost = beyondPresenceMinutes * 0.50; // $0.50 per minute
-      const openAiSummaryCost = 0.001; // ~$0.001 per summary call (GPT-4o-mini)
+      const llmProvider = summary.llmProvider || "openai";
+      const openAiSummaryCost = llmProvider === "groq" ? 0 : 0.001; // Groq is free
       const totalCost = beyondPresenceCost + openAiSummaryCost;
       
       setCallSummary({
@@ -670,6 +670,7 @@ export default function VoiceAgent() {
         appointments: summary.appointments || [],
         userPreferences: summary.userPreferences || [],
         timestamp: endTime,
+        llmProvider,
         costBreakdown: {
           beyondPresenceMinutes,
           beyondPresenceCost,
@@ -842,10 +843,6 @@ export default function VoiceAgent() {
     }
   }, [isMuted, clearAudio]);
 
-  const toggleCamera = useCallback(() => {
-    setIsCameraOn(prev => !prev);
-  }, []);
-
   const handleNewCall = useCallback(() => {
     setCallSummary(null);
     setIdentifiedUser(null);
@@ -1004,7 +1001,7 @@ export default function VoiceAgent() {
                   <BeyAvatar
                     ref={beyAvatarRef}
                     isActive={isCallActive}
-                    isCameraOn={isCameraOn}
+                    isCameraOn={false}
                     isMicOn={!isMuted}
                     phoneNumber={phoneInput}
                     onCallStart={(id) => setBeyCallId(id)}
@@ -1096,11 +1093,9 @@ export default function VoiceAgent() {
               <div className="py-6">
                 <VoiceControls
                   isListening={isListening}
-                  isCameraOn={isCameraOn}
                   isMuted={isMuted}
                   isCallActive={isCallActive}
                   onToggleMic={toggleMic}
-                  onToggleCamera={toggleCamera}
                   onToggleMute={toggleMute}
                   onEndCall={endCall}
                   disabled={isProcessing}
