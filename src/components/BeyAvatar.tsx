@@ -14,6 +14,7 @@ interface BeyAvatarProps {
   isActive: boolean;
   isCameraOn?: boolean;
   isMicOn?: boolean;
+  isSpeakerMuted?: boolean;
   phoneNumber?: string;
   onCallStart?: (callId: string) => void;
   onCallEnd?: () => void;
@@ -32,6 +33,7 @@ export const BeyAvatar = forwardRef<BeyAvatarHandle, BeyAvatarProps>(({
   isActive, 
   isCameraOn = true,
   isMicOn = true,
+  isSpeakerMuted = false,
   phoneNumber,
   onCallStart, 
   onCallEnd,
@@ -55,6 +57,30 @@ export const BeyAvatar = forwardRef<BeyAvatarHandle, BeyAvatarProps>(({
   
   useEffect(() => { callIdRef.current = callId; }, [callId]);
   useEffect(() => { onTranscriptRef.current = onTranscript; }, [onTranscript]);
+
+  // Apply mic state to LiveKit local participant
+  useEffect(() => {
+    const updateMic = async () => {
+      try {
+        if (roomRef.current) {
+          await roomRef.current.localParticipant.setMicrophoneEnabled(!!isMicOn);
+        }
+      } catch (error) {
+        console.warn("Failed to update microphone state:", error);
+      }
+    };
+
+    if (isConnected) {
+      updateMic();
+    }
+  }, [isMicOn, isConnected]);
+
+  // Apply speaker mute to avatar audio output
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.muted = !!isSpeakerMuted;
+    }
+  }, [isSpeakerMuted]);
   
   // Expose sendContext function to parent via ref
   // Sends context to Beyond Presence - the AI's system prompt is configured to recognize "[System note:" messages

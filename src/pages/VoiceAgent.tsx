@@ -42,6 +42,7 @@ export default function VoiceAgent() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [beyMicOn, setBeyMicOn] = useState(true);
   const [sessionId, setSessionId] = useState<number | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentTranscript, setCurrentTranscript] = useState("");
@@ -827,6 +828,11 @@ export default function VoiceAgent() {
 
   // Toggle mic manually (for pausing/resuming listening)
   const toggleMic = useCallback(() => {
+    if (useBeyRef.current) {
+      setBeyMicOn(prev => !prev);
+      return;
+    }
+
     if (isListening) {
       isMicPausedRef.current = true;
       stopListening();
@@ -1002,7 +1008,8 @@ export default function VoiceAgent() {
                     ref={beyAvatarRef}
                     isActive={isCallActive}
                     isCameraOn={false}
-                    isMicOn={!isMuted}
+                    isMicOn={beyMicOn}
+                    isSpeakerMuted={isMuted}
                     phoneNumber={phoneInput}
                     onCallStart={(id) => setBeyCallId(id)}
                     onCallEnd={() => setBeyCallId(null)}
@@ -1070,7 +1077,7 @@ export default function VoiceAgent() {
                 
                 {/* Status indicators overlay */}
                 <div className="absolute top-4 right-4 flex items-center gap-2">
-                  {isListening && (
+                  {(useBey ? beyMicOn : isListening) && (
                     <div className="flex items-center gap-2 bg-green-500/90 backdrop-blur-sm rounded-full px-3 py-1.5" data-testid="status-listening">
                       <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
                       <span className="text-xs text-white font-medium">Listening</span>
@@ -1092,7 +1099,7 @@ export default function VoiceAgent() {
               {/* Video Call Controls */}
               <div className="py-6">
                 <VoiceControls
-                  isListening={isListening}
+                  isListening={useBey ? beyMicOn : isListening}
                   isMuted={isMuted}
                   isCallActive={isCallActive}
                   onToggleMic={toggleMic}
