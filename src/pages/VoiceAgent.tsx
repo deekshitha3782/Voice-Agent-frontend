@@ -13,6 +13,8 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+
 interface UserData {
   id: number;
   phoneNumber: string;
@@ -546,7 +548,7 @@ export default function VoiceAgent() {
         }
       }
       
-      const response = await fetch("/api/sessions", {
+      const response = await fetch(`${API_BASE_URL}/api/sessions`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phoneNumber: phoneInput }),
