@@ -222,6 +222,7 @@ export default function VoiceAgent() {
       
       setIdentifiedUser(data.user);
       setUserAppointments(data.appointments || []);
+      sendAppointmentContext(data.user?.name || null, data.appointments || []);
       
       toast({
         title: data.isNew ? "User identified!" : "User found!",
@@ -240,7 +241,7 @@ export default function VoiceAgent() {
     } finally {
       setIsLookingUp(false);
     }
-  }, [identifiedUser, isLookingUp, beyCallId, toast]);
+  }, [identifiedUser, isLookingUp, beyCallId, toast, sendAppointmentContext]);
 
   // User lookup function (manual) - auto-refreshes call when appointments found
   const lookupUser = useCallback(async () => {
@@ -265,6 +266,7 @@ export default function VoiceAgent() {
       
       setIdentifiedUser(data.user);
       setUserAppointments(data.appointments || []);
+      sendAppointmentContext(data.user?.name || null, data.appointments || []);
       
       if (data.appointments && data.appointments.length > 0) {
         toast({
@@ -292,7 +294,7 @@ export default function VoiceAgent() {
     } finally {
       setIsLookingUp(false);
     }
-  }, [phoneInput, nameInput, beyCallId, toast]);
+  }, [phoneInput, nameInput, beyCallId, toast, sendAppointmentContext]);
   
   // Cancel appointment function
   const cancelAppointment = useCallback(async (appointmentId: number) => {
