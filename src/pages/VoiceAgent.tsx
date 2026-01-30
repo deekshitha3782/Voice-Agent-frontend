@@ -190,9 +190,9 @@ export default function VoiceAgent() {
       const apptList = activeAppts.map((a, i) =>
         `APPOINTMENT ${i + 1}: Date=${a.date}, Time=${a.time}, Description="${a.description || "General appointment"}", Status=${a.status}`
       ).join("\n");
-      contextMessage = `########## REAL APPOINTMENT DATA - READ EXACTLY ##########\n${apptList}\n########## END OF DATA ##########\nMANDATORY RULES FOR APPOINTMENTS:\n1. When user asks about their appointments, you MUST read the EXACT data above\n2. Say the date, time, and description EXACTLY as written - do not paraphrase\n3. Count: This user has exactly ${activeAppts.length} appointment(s)\n4. DO NOT invent any appointment information.`;
+      contextMessage = `[System note: ########## REAL APPOINTMENT DATA - READ EXACTLY ##########\n${apptList}\n########## END OF DATA ##########\nMANDATORY RULES FOR APPOINTMENTS:\n1. When user asks about their appointments, you MUST read the EXACT data above\n2. Say the date, time, and description EXACTLY as written - do not paraphrase\n3. Count: This user has exactly ${activeAppts.length} appointment(s)\n4. DO NOT invent any appointment information.]`;
     } else {
-      contextMessage = `########## REAL APPOINTMENT DATA ##########\nThis user has ZERO appointments scheduled.\n########## END OF DATA ##########\nMANDATORY: Tell the user they have no appointments. Do NOT invent any.`;
+      contextMessage = `[System note: ########## REAL APPOINTMENT DATA ##########\nThis user has ZERO appointments scheduled.\n########## END OF DATA ##########\nMANDATORY: Tell the user they have no appointments. Do NOT invent any.]`;
     }
 
     console.log("Sending appointment context to Beyond Presence:", contextMessage);
@@ -534,6 +534,14 @@ export default function VoiceAgent() {
     try {
       // Initialize audio but don't block on failure
       await initAudio().catch(() => {});
+
+      // Preload user appointments BEFORE starting Bey call
+      if (useBey) {
+        const digits = phoneInput.replace(/\D/g, "");
+        if (digits.length >= 10) {
+          await lookupUser();
+        }
+      }
       
       // Request microphone permission only if NOT using Beyond Presence
       // Beyond Presence handles its own audio through LiveKit
@@ -614,7 +622,7 @@ export default function VoiceAgent() {
         variant: "destructive",
       });
     }
-  }, [initAudio, toast, scheduleAutoRestart, useBey, phoneInput]);
+  }, [initAudio, toast, scheduleAutoRestart, useBey, phoneInput, lookupUser]);
 
   const endCall = useCallback(async () => {
     if (!sessionId) return;
