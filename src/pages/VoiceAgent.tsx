@@ -295,6 +295,14 @@ export default function VoiceAgent() {
       setIsLookingUp(false);
     }
   }, [phoneInput, nameInput, beyCallId, toast, sendAppointmentContext]);
+
+  // Auto-lookup on call start when phone number is already provided
+  useEffect(() => {
+    const digits = phoneInput.replace(/\D/g, "");
+    if (isCallActive && digits.length >= 10 && !identifiedUser && !isLookingUp) {
+      lookupUser();
+    }
+  }, [isCallActive, phoneInput, identifiedUser, isLookingUp, lookupUser]);
   
   // Cancel appointment function
   const cancelAppointment = useCallback(async (appointmentId: number) => {
