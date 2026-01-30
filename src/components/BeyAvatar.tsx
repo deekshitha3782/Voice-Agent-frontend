@@ -51,6 +51,7 @@ export const BeyAvatar = forwardRef<BeyAvatarHandle, BeyAvatarProps>(({
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasLocalVideo, setHasLocalVideo] = useState(false);
+  const [hasRemoteVideo, setHasRemoteVideo] = useState(false);
   
   const callIdRef = useRef(callId);
   const onTranscriptRef = useRef(onTranscript);
@@ -167,6 +168,7 @@ export const BeyAvatar = forwardRef<BeyAvatarHandle, BeyAvatarProps>(({
       room.on(RoomEvent.Disconnected, () => {
         console.log("Disconnected from LiveKit room");
         setIsConnected(false);
+        setHasRemoteVideo(false);
       });
       
       room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
@@ -174,6 +176,7 @@ export const BeyAvatar = forwardRef<BeyAvatarHandle, BeyAvatarProps>(({
         
         if (track.kind === Track.Kind.Video && videoRef.current) {
           track.attach(videoRef.current);
+          setHasRemoteVideo(true);
         } else if (track.kind === Track.Kind.Audio && audioRef.current) {
           track.attach(audioRef.current);
         }
@@ -182,6 +185,9 @@ export const BeyAvatar = forwardRef<BeyAvatarHandle, BeyAvatarProps>(({
       room.on(RoomEvent.TrackUnsubscribed, (track) => {
         console.log("Track unsubscribed:", track.kind);
         track.detach();
+        if (track.kind === Track.Kind.Video) {
+          setHasRemoteVideo(false);
+        }
       });
       
       room.on(RoomEvent.DataReceived, (payload, participant) => {
@@ -382,7 +388,7 @@ export const BeyAvatar = forwardRef<BeyAvatarHandle, BeyAvatarProps>(({
     );
   }
 
-  if (isLoading || (isActive && !isConnected)) {
+  if (isLoading || (isActive && (!isConnected || !hasRemoteVideo))) {
     return (
       <div className={cn("flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl", className)}>
         <div className="flex flex-col items-center gap-4">
