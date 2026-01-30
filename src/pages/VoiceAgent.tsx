@@ -182,19 +182,19 @@ export default function VoiceAgent() {
   // Send appointment context to Beyond Presence so the AI knows about user's appointments
   const sendAppointmentContext = useCallback((userName: string | null | undefined, appointments: AppointmentData[]) => {
     if (!beyAvatarRef.current) return;
-    
+
     const activeAppts = appointments.filter(a => a.status !== "cancelled");
     let contextMessage = "";
-    
+
     if (activeAppts.length > 0) {
-      const apptList = activeAppts.map(a => 
-        `- ${a.date} at ${a.time}: ${a.description || "General appointment"} (Status: ${a.status})`
+      const apptList = activeAppts.map((a, i) =>
+        `APPOINTMENT ${i + 1}: Date=${a.date}, Time=${a.time}, Description="${a.description || "General appointment"}", Status=${a.status}`
       ).join("\n");
-      contextMessage = `[System note: User ${userName || "identified"}. Their appointments from database:\n${apptList}\nPlease use ONLY this data when discussing their appointments.]`;
+      contextMessage = `########## REAL APPOINTMENT DATA - READ EXACTLY ##########\n${apptList}\n########## END OF DATA ##########\nMANDATORY RULES FOR APPOINTMENTS:\n1. When user asks about their appointments, you MUST read the EXACT data above\n2. Say the date, time, and description EXACTLY as written - do not paraphrase\n3. Count: This user has exactly ${activeAppts.length} appointment(s)\n4. DO NOT invent any appointment information.`;
     } else {
-      contextMessage = `[System note: User ${userName || "identified"} has NO appointments scheduled. Do not make up any appointments.]`;
+      contextMessage = `########## REAL APPOINTMENT DATA ##########\nThis user has ZERO appointments scheduled.\n########## END OF DATA ##########\nMANDATORY: Tell the user they have no appointments. Do NOT invent any.`;
     }
-    
+
     console.log("Sending appointment context to Beyond Presence:", contextMessage);
     beyAvatarRef.current.sendContext(contextMessage);
   }, []);
