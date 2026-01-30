@@ -382,12 +382,12 @@ export const BeyAvatar = forwardRef<BeyAvatarHandle, BeyAvatarProps>(({
     );
   }
 
-  if (isLoading) {
+  if (isLoading || (isActive && !isConnected)) {
     return (
       <div className={cn("flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl", className)}>
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="w-12 h-12 animate-spin text-primary" />
-          <p className="text-sm text-gray-400">Connecting to AI Assistant...</p>
+          <p className="text-sm text-gray-400">Please wait while we connect you to the assistant.</p>
         </div>
       </div>
     );
@@ -435,7 +435,7 @@ export const BeyAvatar = forwardRef<BeyAvatarHandle, BeyAvatarProps>(({
         <div className="absolute inset-0 flex items-center justify-center bg-black/50">
           <div className="flex flex-col items-center gap-2">
             <Loader2 className="w-8 h-8 animate-spin text-white" />
-            <p className="text-sm text-white">Connecting...</p>
+            <p className="text-sm text-white">Please wait while we connect you to the assistant.</p>
           </div>
         </div>
       )}
