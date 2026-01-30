@@ -51,7 +51,7 @@ export const BeyAvatar = forwardRef<BeyAvatarHandle, BeyAvatarProps>(({
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasLocalVideo, setHasLocalVideo] = useState(false);
-  const [hasRemoteVideo, setHasRemoteVideo] = useState(false);
+  const [hasRemoteMedia, setHasRemoteMedia] = useState(false);
   
   const callIdRef = useRef(callId);
   const onTranscriptRef = useRef(onTranscript);
@@ -168,7 +168,7 @@ export const BeyAvatar = forwardRef<BeyAvatarHandle, BeyAvatarProps>(({
       room.on(RoomEvent.Disconnected, () => {
         console.log("Disconnected from LiveKit room");
         setIsConnected(false);
-        setHasRemoteVideo(false);
+        setHasRemoteMedia(false);
       });
       
       room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
@@ -176,17 +176,18 @@ export const BeyAvatar = forwardRef<BeyAvatarHandle, BeyAvatarProps>(({
         
         if (track.kind === Track.Kind.Video && videoRef.current) {
           track.attach(videoRef.current);
-          setHasRemoteVideo(true);
+          setHasRemoteMedia(true);
         } else if (track.kind === Track.Kind.Audio && audioRef.current) {
           track.attach(audioRef.current);
+          setHasRemoteMedia(true);
         }
       });
       
       room.on(RoomEvent.TrackUnsubscribed, (track) => {
         console.log("Track unsubscribed:", track.kind);
         track.detach();
-        if (track.kind === Track.Kind.Video) {
-          setHasRemoteVideo(false);
+        if (track.kind === Track.Kind.Video || track.kind === Track.Kind.Audio) {
+          setHasRemoteMedia(false);
         }
       });
       
@@ -388,12 +389,26 @@ export const BeyAvatar = forwardRef<BeyAvatarHandle, BeyAvatarProps>(({
     );
   }
 
-  if (isLoading || (isActive && (!isConnected || !hasRemoteVideo))) {
+  if (isLoading || (isActive && !isConnected)) {
     return (
       <div className={cn("flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl", className)}>
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="w-12 h-12 animate-spin text-primary" />
           <p className="text-sm text-gray-400">Please wait while we connect you to the assistant.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isActive && isConnected && !hasRemoteMedia) {
+    return (
+      <div className={cn("flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl", className)}>
+        <div className="flex flex-col items-center gap-2">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-green-500" />
+            <span className="text-sm text-gray-300">Connected</span>
+          </div>
+          <p className="text-xs text-gray-400">Waiting for avatar media...</p>
         </div>
       </div>
     );
