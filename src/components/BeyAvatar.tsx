@@ -389,26 +389,12 @@ export const BeyAvatar = forwardRef<BeyAvatarHandle, BeyAvatarProps>(({
     );
   }
 
-  if (isLoading || (isActive && !isConnected)) {
+  if (isLoading) {
     return (
       <div className={cn("flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl", className)}>
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="w-12 h-12 animate-spin text-primary" />
           <p className="text-sm text-gray-400">Please wait while we connect you to the assistant.</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (isActive && isConnected && !hasRemoteMedia) {
-    return (
-      <div className={cn("flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl", className)}>
-        <div className="flex flex-col items-center gap-2">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-green-500" />
-            <span className="text-sm text-gray-300">Connected</span>
-          </div>
-          <p className="text-xs text-gray-400">Waiting for avatar media...</p>
         </div>
       </div>
     );
