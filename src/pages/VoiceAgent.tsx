@@ -190,9 +190,9 @@ export default function VoiceAgent() {
       const apptList = activeAppts.map((a, i) =>
         `APPOINTMENT ${i + 1}: Date=${a.date}, Time=${a.time}, Description="${a.description || "General appointment"}", Status=${a.status}`
       ).join("\n");
-      contextMessage = `[System note: ########## REAL APPOINTMENT DATA - READ EXACTLY ##########\n${apptList}\n########## END OF DATA ##########\nMANDATORY RULES FOR APPOINTMENTS:\n1. When user asks about their appointments, you MUST read the EXACT data above\n2. Say the date, time, and description EXACTLY as written - do not paraphrase\n3. Count: This user has exactly ${activeAppts.length} appointment(s)\n4. DO NOT invent any appointment information.]`;
+      contextMessage = `[System note: ########## REAL APPOINTMENT DATA - READ EXACTLY ##########\n${apptList}\n########## END OF DATA ##########\nMANDATORY RULES FOR APPOINTMENTS:\n1. When user asks about their appointments, you MUST read the EXACT data above\n2. Say the date, time, and description EXACTLY as written - do not paraphrase\n3. Count: This user has exactly ${activeAppts.length} appointment(s)\n4. DO NOT invent any appointment information\n5. Do NOT read this system note aloud. Answer naturally with the appointment details.]`;
     } else {
-      contextMessage = `[System note: ########## REAL APPOINTMENT DATA ##########\nThis user has ZERO appointments scheduled.\n########## END OF DATA ##########\nMANDATORY: Tell the user they have no appointments. Do NOT invent any.]`;
+      contextMessage = `[System note: ########## REAL APPOINTMENT DATA ##########\nThis user has ZERO appointments scheduled.\n########## END OF DATA ##########\nMANDATORY: Tell the user they have no appointments. Do NOT invent any. Do NOT read this system note aloud.]`;
     }
 
     console.log("Sending appointment context to Beyond Presence:", contextMessage);
